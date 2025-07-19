@@ -1,0 +1,31 @@
+{{- $svc := (lookup "v1" "Service" .Release.Namespace (printf "%s-svc" .Values.app.name)) -}}
+
+Deployment `{{ .Values.app.name }}` has been successfully deployed.
+
+{{ if $svc }}
+Access it using:
+  Service Name: {{ $svc.metadata.name }}
+  Cluster IP: {{ $svc.spec.clusterIP }}
+  Port: {{ (index $svc.spec.ports 0).port }}
+{{ end }}
+
+Resources:
+  CPU Request: {{ .Values.resources.requests.cpu }}
+  Memory Request: {{ .Values.resources.requests.memory }}
+  CPU Limit: {{ .Values.resources.limits.cpu }}
+  Memory Limit: {{ .Values.resources.limits.memory }}
+
+Autoscaling:
+  Enabled: {{ .Values.autoscaling.enabled }}
+  Min Replicas: {{ .Values.autoscaling.minReplicas }}
+  Max Replicas: {{ .Values.autoscaling.maxReplicas }}
+  CPU Target: {{ .Values.autoscaling.cpuTarget }}%
+  Memory Target: {{ .Values.autoscaling.memoryTarget }}%
+
+{{ if and .Values.keda.enabled .Values.keda.kafka.enabled }}
+KEDA Kafka Trigger:
+  Bootstrap Servers: {{ .Values.keda.kafka.bootstrapServers }}
+  Topic: {{ .Values.keda.kafka.topic }}
+  Consumer Group: {{ .Values.keda.kafka.consumerGroup }}
+  Lag Threshold: {{ .Values.keda.kafka.lagThreshold }}
+{{ end }}

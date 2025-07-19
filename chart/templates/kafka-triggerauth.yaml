@@ -1,0 +1,33 @@
+{{- if .Values.keda.kafka.auth }}
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: {{ .Values.app.name }}-kafka-auth
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretTargetRef:
+    - parameter: authMode
+      name: {{ .Values.app.name }}-kafka-secret
+      key: authMode
+    - parameter: username
+      name: {{ .Values.app.name }}-kafka-secret
+      key: username
+    - parameter: password
+      name: {{ .Values.app.name }}-kafka-secret
+      key: password
+    {{- if .Values.keda.kafka.auth.ca }}
+    - parameter: ca
+      name: {{ .Values.app.name }}-kafka-secret
+      key: ca
+    {{- end }}
+    {{- if .Values.keda.kafka.auth.cert }}
+    - parameter: cert
+      name: {{ .Values.app.name }}-kafka-secret
+      key: cert
+    {{- end }}
+    {{- if .Values.keda.kafka.auth.key }}
+    - parameter: key
+      name: {{ .Values.app.name }}-kafka-secret
+      key: key
+    {{- end }}
+{{- end }}

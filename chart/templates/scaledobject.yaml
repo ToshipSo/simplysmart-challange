@@ -1,0 +1,38 @@
+{{- if and .Values.keda.enabled .Values.keda.kafka.enabled }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ .Values.app.name }}-scaledobject
+spec:
+  scaleTargetRef:
+    name: {{ .Values.app.name }}
+  pollingInterval: {{ .Values.keda.pollingInterval }}
+  cooldownPeriod: {{ .Values.keda.cooldownPeriod }}
+  minReplicaCount: {{ .Values.keda.minReplicaCount }}
+  maxReplicaCount: {{ .Values.keda.maxReplicaCount }}
+  triggers:
+    {{- if .Values.keda.triggers.cpu.enabled }}
+    - type: cpu
+      metadata:
+        type: Utilization
+        value: "{{ .Values.keda.triggers.cpu.target }}"
+    {{- end }}
+    {{- if .Values.keda.triggers.memory.enabled }}
+    - type: memory
+      metadata:
+        type: Utilization
+        value: "{{ .Values.keda.triggers.memory.target }}"
+    {{- end }}
+    {{- if .Values.keda.triggers.kafka.enabled }}
+    - type: kafka
+      metadata:
+        bootstrapServers: {{ .Values.keda.triggers.kafka.bootstrapServers }}
+        topic: {{ .Values.keda.triggers.kafka.topic }}
+        consumerGroup: {{ .Values.keda.triggers.kafka.consumerGroup }}
+        lagThreshold: "{{ .Values.keda.triggers.kafka.lagThreshold }}"
+      {{- if .Values.keda.triggers.kafka.auth }}
+      authenticationRef:
+        name: {{ .Values.app.name }}-kafka-auth
+      {{- end }}
+    {{- end }}
+{{- end }}
