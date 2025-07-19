@@ -7,12 +7,6 @@ NAMESPACE="$3"
 
 echo "Applying values file: $VALUES_FILE"
 
-helm upgrade --install "$RELEASE_NAME" ./chart -f "$VALUES_FILE" -n "$NAMESPACE" --create-namespace
+helm upgrade --install "$RELEASE_NAME" ./chart -f "$VALUES_FILE" -n "$NAMESPACE" --create-namespace --atomic --wait
 
 echo "Deployment created successfully."
-
-echo "Waiting for deployment to be ready..."
-APP=$(kubectl get deployments -n services \
-  -o go-template='{{range .items}}{{if eq (index .metadata.annotations "meta.helm.sh/release-name") "my-app"}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}')
-
-kubectl rollout status deploy -n "$NAMESPACE" $APP

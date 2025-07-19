@@ -2,12 +2,6 @@
 
 Deployment `{{ .Values.app.name }}` has been successfully deployed.
 
-{{ if $svc }}
-Access it using:
-  Service Name: {{ $svc.metadata.name }}
-  Cluster IP: {{ $svc.spec.clusterIP }}
-  Port: {{ (index $svc.spec.ports 0).port }}
-{{ end }}
 
 Resources:
   CPU Request: {{ .Values.resources.requests.cpu }}
@@ -31,4 +25,14 @@ KEDA Kafka Trigger:
   Topic: {{ .Values.keda.triggers.kafka.topic }}
   Consumer Group: {{ .Values.keda.triggers.kafka.consumerGroup }}
   Lag Threshold: {{ .Values.keda.triggers.kafka.lagThreshold }}
+{{ end }}
+
+{{ if $svc }}
+Access it using:
+  Service Name: {{ $svc.metadata.name }}
+  Cluster IP: {{ $svc.spec.clusterIP }}
+  Port: {{ (index $svc.spec.ports 0).port }}
+  {{ if $svc.status.loadBalancer}}
+  Loadbalancer Details: {{ $svc.status.loadBalancer }}
+  {{ end }}
 {{ end }}
