@@ -15,17 +15,20 @@ Resources:
   CPU Limit: {{ .Values.resources.limits.cpu }}
   Memory Limit: {{ .Values.resources.limits.memory }}
 
-Autoscaling:
+
+{{ if and .Values.keda.enabled .Values.keda.triggers.cpu.enabled }}
+KEDA CPU Memory Triggers:
   Enabled: {{ .Values.autoscaling.enabled }}
   Min Replicas: {{ .Values.autoscaling.minReplicas }}
   Max Replicas: {{ .Values.autoscaling.maxReplicas }}
   CPU Target: {{ .Values.autoscaling.cpuTarget }}%
   Memory Target: {{ .Values.autoscaling.memoryTarget }}%
+{{ end }}
 
-{{ if and .Values.keda.enabled .Values.keda.kafka.enabled }}
+{{ if and .Values.keda.enabled .Values.keda.triggers.kafka.enabled }}
 KEDA Kafka Trigger:
-  Bootstrap Servers: {{ .Values.keda.kafka.bootstrapServers }}
-  Topic: {{ .Values.keda.kafka.topic }}
-  Consumer Group: {{ .Values.keda.kafka.consumerGroup }}
-  Lag Threshold: {{ .Values.keda.kafka.lagThreshold }}
+  Bootstrap Servers: {{ .Values.keda.triggers.kafka.bootstrapServers }}
+  Topic: {{ .Values.keda.triggers.kafka.topic }}
+  Consumer Group: {{ .Values.keda.triggers.kafka.consumerGroup }}
+  Lag Threshold: {{ .Values.keda.triggers.kafka.lagThreshold }}
 {{ end }}
